@@ -20,6 +20,21 @@ def preprocess_train_data():
     training_labels = np.genfromtxt(str(args.train_label), delimiter=' ')
     test_set = np.genfromtxt(str(args.test_data), delimiter=' ')
 
+def classify(test_data, output_file):
+    test_data_classifications = []
+    f = open(output_file, "w+")
+    for d in test_data:
+        label = classify_point(d)
+        f.write(str(label) + "\n")
+
+        test_data_classifications.append(label)
+
+def accuracy(test_data_classifications, test_data_true_labels):
+    predicted = np.array(test_data_classifications)
+    true = np.array(test_data_true_labels)
+
+    return float(np.sum(predicted == true)) / len(test_data_classifications)
+
 def main():
     parse_data_file_args()
     preprocess_train_data()
