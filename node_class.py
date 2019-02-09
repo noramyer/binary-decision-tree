@@ -5,15 +5,16 @@ class Node:
         self.data_idx_labels = labels
         self.impurity_method = impurity_method
         self.nlevels = level
-        self.impurity = None
-        self.dfeature = None
-        self.nfeatures = None
+        self.nfeatures = len(data[0])
+
+        #calc impurity
+        self.impurity  = calculate_IP(data, impurity_method, labels)
+
+        #initialize other variables
         self.class = None
         self.left_child = None
         self.right_child = None
-
-        #calc impurity
-        #initialize other variables
+        self.dfeature = None
 
     def build_decision_tree(data, labels, impurity_method, nl, p):
         decision_tree = Node(data, labels, impurity_method, 0)
@@ -24,6 +25,10 @@ class Node:
     def split_node(self, nl, p):
 
         if self.nLevels < nl and self.impurity > p:
+            if(len(set(self.labels)) == 1):
+                self.class = self.labels[0]
+                return
+
             max_gain = -1.0
             splitFeature = None
 
@@ -73,6 +78,8 @@ class Node:
             self.left_child.split_node(nl, p)
             self.right_child.split_node(nl, p)
 
+        return
+
     def calculate_IP(data, impurity_method, labels):
         p = 0.0
         if impurity_method == "gini":
@@ -98,3 +105,11 @@ class Node:
                 sum += prob * math.log(prob, 2)
 
         return -1.0 * sum
+
+    def classify(self, row):
+            if self.left_child == None and self.right_child == None:
+                return self.class
+            elif row[self.dfeature] == 0:
+                return classify(self.left_child, row)
+            else:
+                return classify(self.right_child, row)
