@@ -29,9 +29,12 @@ def classify(test_data, output_file, dt):
     f = open(output_file, "w+")
     for d in test_data:
         label = dt.classify(d)
+        print(label)
         f.write(str(label) + "\n")
 
         test_data_classifications.append(label)
+
+    return test_data_classifications
 
 def accuracy(test_data_classifications, test_data_true_labels):
     predicted = np.array(test_data_classifications)
@@ -44,6 +47,9 @@ def main():
     training_set, training_labels, test_set, test_labels = preprocess_train_data()
     n = Node(training_set, training_labels, str(args.impurity), str(args.nlevels))
     dt = n.build_decision_tree(training_set, training_labels, str(args.impurity), str(args.nlevels), str(args.pthrd))
+    test_data_classifications = classify(test_set, str(args.pred_file), dt)
+    a = accuracy(test_data_classifications, test_labels)
+    print(a)
 
 if __name__ == "__main__":
     main()

@@ -26,13 +26,15 @@ class Node:
         return decision_tree
 
     def split_node(self, nl, p):
-        print("here")
+        if self.impurity == 0.0:
+            print(set(self.data_idx_labels))
+            print(len(set(self.data_idx_labels)))
+
+        if(len(set(self.data_idx_labels)) == 1):
+            self.class_label = self.data_idx_labels[0]
+            return
+
         if self.nlevels < nl and self.impurity > float(p):
-
-            if(len(set(self.data_idx_labels)) == 1):
-                self.class_label = self.labels[0]
-                return
-
             max_gain = -1.0
             splitFeature = None
 
@@ -96,9 +98,9 @@ class Node:
             if self.left_child == None and self.right_child == None:
                 return self.class_label
             elif row[self.dfeature] == 0:
-                return classify(self.left_child, row)
+                return self.left_child.classify(row)
             else:
-                return classify(self.right_child, row)
+                return self.right_child.classify(row)
 
     def calculate_gini(self, data, labels):
         size = len(data)
