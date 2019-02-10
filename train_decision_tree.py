@@ -1,13 +1,14 @@
 import argparse
 import numpy as np
 from collections import namedtuple
+from node_class import Node
 
 args = ""
 
 def parse_data_file_args():
     global args
 
-    args_labels = ["-train_data", "-train_label", "-test_data", "-nLevels", "-pThrd", "-impurity", "-pred_file"]
+    args_labels = ["-train_data", "-train_label", "-test_data", "-test_label", "-nlevels", "-pthrd", "-impurity", "-pred_file"]
     parser = argparse.ArgumentParser()
 
     for arg in args_labels:
@@ -19,6 +20,9 @@ def preprocess_train_data():
     training_set = np.genfromtxt(str(args.train_data), delimiter=' ')
     training_labels = np.genfromtxt(str(args.train_label), delimiter=' ')
     test_set = np.genfromtxt(str(args.test_data), delimiter=' ')
+    test_labels = np.genfromtxt(str(args.test_label), delimiter=' ')
+
+    return training_set, training_labels, test_set, test_labels
 
 def classify(test_data, output_file, dt):
     test_data_classifications = []
@@ -37,7 +41,9 @@ def accuracy(test_data_classifications, test_data_true_labels):
 
 def main():
     parse_data_file_args()
-    preprocess_train_data()
+    training_set, training_labels, test_set, test_labels = preprocess_train_data()
+    n = Node(training_set, training_labels, str(args.impurity), str(args.nlevels))
+    dt = n.build_decision_tree(training_set, training_labels, str(args.impurity), str(args.nlevels), str(args.pthrd))
 
 if __name__ == "__main__":
     main()
