@@ -105,12 +105,11 @@ class Node:
 
     #Based on the impurity method input, calc either gini or entropy
     def calculate_IP(self, data, labels):
-        p = 0.0
         if self.impurity_method == "gini":
-            p = self.calculate_gini(data, labels)
+            return self.calculate_gini(data, labels)
         elif self.impurity_method == "entropy":
-            p = self.calculate_entropy(data, labels)
-        return p
+            return self.calculate_entropy(data, labels)
+        return 0.0
 
     #Called on a node, will return the class given a test row of data based on its features
     def classify(self, row):

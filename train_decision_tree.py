@@ -14,12 +14,15 @@ args = ""
 def parse_data_file_args():
     global args
 
+    #set arg labels
     args_labels = ["-train_data", "-train_label", "-test_data", "-test_label", "-nlevels", "-pthrd", "-impurity", "-pred_file"]
     parser = argparse.ArgumentParser()
 
+    #build the parser with labels
     for arg in args_labels:
         parser.add_argument(arg)
 
+    #set global args
     args = parser.parse_args()
 
 #Pull training and test data out of arg parser
@@ -53,6 +56,46 @@ def accuracy(test_data_classifications, test_data_true_labels):
 
     return float(np.sum(predicted == true_values)) / len(test_data_classifications)
 
+#BONUS
+#This calculates the accuracy, precision, and recall assuming you have two classifications class1 and not class1
+def confusion_matrix(test_data_classifications, test_data_true_labels):
+    #set confusion matrix cells equal to zero
+    true_predicted_class_1 = 0
+    false_predicted_class_1 = 0
+    true_predicted_not_class_1 = 0
+    false_predicted_not_class_1 = 0
+    count_positive = 0
+
+    #for each of the test points, look at how it was correctly or incorrectly classified
+    for idx, val in enumerate(test_data_true_labels):
+        if val == 1.0:
+            count_positive += 1
+
+            #true positive case
+            if test_data_classifications[idx] == 1.0:
+                true_predicted_class_1 += 1
+            #false negative case
+            else:
+                false_predicted_not_class_1 += 1
+        else:
+            #false positive case
+            if test_data_classifications[idx] == 1.0:
+                false_predicted_class_1 += 1
+            #true negative case
+            else:
+                true_predicted_not_class_1 += 1
+
+    #calculate values
+    accuracy = float(true_predicted_not_class_1 + true_predicted_class_1) / len(test_data_classifications)
+    precision = float(true_predicted_class_1) / (true_predicted_class_1 + false_predicted_class_1)
+    recall = float(true_predicted_class_1 / count_positive)
+
+    #print results to output
+    print("**** Bonus: Class 1 Binary Classification Results ****")
+    print("Accuracy: " + str(accuracy))
+    print("Precision: " + str(precision))
+    print("Recall: "+ str(recall))
+
 def main():
     parse_data_file_args()
     training_set, training_labels, test_set, test_labels = preprocess_train_data()
@@ -68,8 +111,12 @@ def main():
 
     #calc and print accuracy of labels
     a = accuracy(test_data_classifications, test_labels)
-    print("Classification accuracy: " + str(a))
-    print("Error rate: " + str(1.0 - a))
+    print("Overall classification accuracy: " + str(a))
+    print("Overall error rate: " + str(1.0 - a) +"\n")
+
+    #BONUS: class 1 binary classification calculation method call
+    a = confusion_matrix(test_data_classifications, test_labels)
+
 
 if __name__ == "__main__":
     main()
