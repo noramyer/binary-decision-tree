@@ -31,13 +31,17 @@ def preprocess_train_data():
 
     return training_set, training_labels, test_set, test_labels
 
+#Given test data, return array of classifications for each row in test
 def classify(test_data, output_file, dt):
     test_data_classifications = []
+
+    #opens file to write classifications
     f = open(output_file, "w+")
+
+    #for each row, classify based on features and print to file
     for d in test_data:
         label = dt.classify(d)
         f.write(str(label) + "\n")
-
         test_data_classifications.append(label)
 
     return test_data_classifications
@@ -54,15 +58,18 @@ def main():
     training_set, training_labels, test_set, test_labels = preprocess_train_data()
 
     #set up and build dt from imported node class
+    print("Building decision tree... \n")
     n = Node(training_set, training_labels, str(args.impurity), str(args.nlevels))
     dt = n.build_decision_tree(training_set, training_labels, str(args.impurity), int(str(args.nlevels)), float(str(args.pthrd)))
 
     #given test data, get classifications from dt
+    print("Classifying test data... \n")
     test_data_classifications = classify(test_set, str(args.pred_file), dt)
 
     #calc and print accuracy of labels
     a = accuracy(test_data_classifications, test_labels)
-    print(a)
+    print("Classification accuracy: " + str(a))
+    print("Error rate: " + str(1.0 - a))
 
 if __name__ == "__main__":
     main()
